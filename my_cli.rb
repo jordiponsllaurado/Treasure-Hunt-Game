@@ -29,11 +29,6 @@ class MyCLI < Thor
     end
   end
 
-  desc 'stop', 'say hello to NAME'
-  def stop
-    # TODO
-  end
-
   desc 'position X Y', 'say if the treasure is there'
   def position(x, y)
     if !x.to_i.between?(0, 10) || !y.to_i.between?(0, 10)
@@ -47,6 +42,15 @@ class MyCLI < Thor
       zone_y = (y.to_i - treasure_y).abs
       print_results(zone_x, zone_y)
     end
+  end
+
+  desc 'solution', 'it says the solution'
+  def solution
+    ds = DB[:map]
+    result = ds.where(:name => 'treasure')
+    treasure_x = result.first[:pos_x]
+    treasure_y =  result.first[:pos_y]
+    puts treasure_x.to_s + ' ' + treasure_y.to_s
   end
 
   private
