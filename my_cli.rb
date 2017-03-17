@@ -8,18 +8,10 @@ class MyCLI < Thor
 
   desc 'play', 'Creates a new map'
   def play
+    create_db_table unless DB.table_exists? :map
+
     treasure_x = rand(10)
     treasure_y = rand(10)
-
-    unless DB.table_exists? :map
-      DB.create_table(:map) do
-        primary_key :id
-        String :name
-        Integer :pos_x
-        Integer :pos_y
-      end
-    end
-
     ds = DB[:map]
     if ds.where(:name => 'treasure').first
       ds.where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
@@ -53,6 +45,15 @@ class MyCLI < Thor
   end
 
   private
+
+  def create_db_table
+    DB.create_table(:map) do
+      primary_key :id
+      String :name
+      Integer :pos_x
+      Integer :pos_y
+    end
+  end
 
   def print_results(zone_x, zone_y)
     if zone_x.eql?(0) && zone_y.eql?(0)
