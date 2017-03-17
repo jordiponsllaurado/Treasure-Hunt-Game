@@ -1,5 +1,4 @@
 require 'thor'
-require 'terminal-table'
 require 'sequel'
 require 'sqlite3'
 
