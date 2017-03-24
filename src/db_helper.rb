@@ -20,6 +20,10 @@ module DBHelper
   end
 
   def self.update_treasure(treasure_x, treasure_y)
-    DB[:map].where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
+    if get_treasure.first
+      DB[:map].where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
+    else
+      set_treasure(treasure_x, treasure_y)
+    end
   end
 end
