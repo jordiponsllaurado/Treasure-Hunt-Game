@@ -2,21 +2,20 @@ require 'thor'
 require 'sequel'
 require 'sqlite3'
 
-class MyCLI < Thor
+require_relative 'db_helper'
 
-  DB = Sequel.sqlite('treasure.db')
+class MyCLI < Thor
 
   desc 'play', 'Creates a new map'
   def play
-    create_db_table unless DB.table_exists? :map
+    DBHelper.create_db_table
 
     treasure_x = rand(10)
     treasure_y = rand(10)
-    ds = DB[:map]
-    if ds.where(:name => 'treasure').first
-      ds.where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
+    if DBHelper.get_treasure.first
+      DBHelper.update_treause(treasure_x, treasure_y)
     else
-      ds.insert(:name => 'treasure', :pos_x => treasure_x, :pos_y => treasure_y)
+      DBHelper.set_treasure(treasure_x, treasure_y)
     end
   end
 
@@ -25,8 +24,7 @@ class MyCLI < Thor
     if !x.to_i.between?(0, 10) || !y.to_i.between?(0, 10)
       puts 'Coordinates out of the map!'
     else
-      ds = DB[:map]
-      result = ds.where(:name => 'treasure')
+      result = DBHelper.get_treasure
       treasure_x = result.first[:pos_x]
       treasure_y =  result.first[:pos_y]
       zone_x =  (x.to_i - treasure_x).abs
@@ -37,23 +35,13 @@ class MyCLI < Thor
 
   desc 'solution', 'it says the solution'
   def solution
-    ds = DB[:map]
-    result = ds.where(:name => 'treasure')
+    result = DBHelper.get_treasure
     treasure_x = result.first[:pos_x]
     treasure_y =  result.first[:pos_y]
     puts treasure_x.to_s + ' ' + treasure_y.to_s
   end
 
   private
-
-  def create_db_table
-    DB.create_table(:map) do
-      primary_key :id
-      String :name
-      Integer :pos_x
-      Integer :pos_y
-    end
-  end
 
   def print_results(zone_x, zone_y)
     if zone_x.eql?(0) && zone_y.eql?(0)
