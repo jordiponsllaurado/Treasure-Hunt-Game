@@ -19,7 +19,7 @@ module DBHelper
     DB[:map].insert(:name => 'treasure', :pos_x => treasure_x, :pos_y => treasure_y)
   end
 
-  def self.update_treause(treasure_x, treasure_y)
+  def self.update_treasure(treasure_x, treasure_y)
     DB[:map].where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
   end
 end
