@@ -24,7 +24,7 @@ class MyCLI < Thor
   desc 'solution', 'it says the solution'
   def solution
     treasure = Game.get_treasure
-    puts treasure[0].to_s + ' ' + treasure[1].to_s
+    puts treasure[:x].to_s + ' ' + treasure[:y].to_s
   end
 end
 

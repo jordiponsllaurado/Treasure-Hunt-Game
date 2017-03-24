@@ -23,11 +23,9 @@ module Game
   end
 
   def self.send_coord(x, y)
-    result = DBHelper.get_treasure
-    treasure_x = result.first[:pos_x]
-    treasure_y =  result.first[:pos_y]
-    zone_x =  (x - treasure_x).abs
-    zone_y = (y - treasure_y).abs
+    treasure = get_treasure
+    zone_x =  (x - treasure[:x]).abs
+    zone_y = (y - treasure[:y]).abs
     get_result(zone_x, zone_y)
   end
 
@@ -35,7 +33,7 @@ module Game
     result = DBHelper.get_treasure
     treasure_x = result.first[:pos_x]
     treasure_y =  result.first[:pos_y]
-    [treasure_x, treasure_y]
+    {x: treasure_x, y: treasure_y}
   end
 
   private
