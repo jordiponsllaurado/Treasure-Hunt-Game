@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Game do
   describe '#Game' do
     before do
-      DBHelper.create_db_table
+      Game.create_game
       DBHelper.update_treasure(5, 5)
     end
 
@@ -47,6 +47,28 @@ describe Game do
       it 'gets the correct solution' do
         expected = {x: 5, y: 5}
         expect(Game.get_treasure).to eql(expected)
+      end
+    end
+
+    describe 'attempts' do
+      it 'returns 0' do
+        Game.create_game
+        expect(DBHelper.get_attempts).to eql(0)
+      end
+
+      it 'returns 1 if the player picked one position' do
+        Game.create_game
+        Game.send_coord(2, 2)
+        expect(DBHelper.get_attempts).to eql(1)
+      end
+
+      it 'returns game over when the player used more than 5 attempnts' do
+        Game.create_game
+        Game.send_coord(2, 2)
+        Game.send_coord(1, 2)
+        Game.send_coord(2, 3)
+        Game.send_coord(2, 9)
+        expect(Game.send_coord(1, 2)).to eql('GAME OVER!!!')
       end
     end
   end

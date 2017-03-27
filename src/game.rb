@@ -16,6 +16,7 @@ module Game
     else
       DBHelper.set_treasure(treasure_x, treasure_y)
     end
+    DBHelper.reset_attempts
   end
 
   def self.check_boundaries(x, y)
@@ -23,6 +24,10 @@ module Game
   end
 
   def self.send_coord(x, y)
+    DBHelper.increment_attempts
+    if DBHelper.get_attempts >= 5
+      return 'GAME OVER!!!'
+    end
     treasure = get_treasure
     zone_x =  (x - treasure[:x]).abs
     zone_y = (y - treasure[:y]).abs

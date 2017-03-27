@@ -9,6 +9,11 @@ module DBHelper
       Integer :pos_x
       Integer :pos_y
     end unless DB.table_exists? :map
+    DB.create_table(:game) do
+      primary_key :id
+      String :name
+      Integer :attempts, :default => 0
+    end unless DB.table_exists? :game
   end
 
   def self.get_treasure
@@ -25,5 +30,22 @@ module DBHelper
     else
       set_treasure(treasure_x, treasure_y)
     end
+  end
+
+  def self.reset_attempts
+    if DB[:game].where(:name => 'number').first
+      DB[:game].where(:name => 'number').update(:attempts => 0)
+    else
+      DB[:game].insert(:name => 'number')
+    end
+  end
+
+  def self.get_attempts
+    DB[:game].where(:name => 'number').first[:attempts]
+  end
+
+  def self.increment_attempts
+    attempts = get_attempts + 1
+    DB[:game].where(:name => 'number').update(:attempts => attempts)
   end
 end
