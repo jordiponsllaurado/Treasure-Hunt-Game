@@ -13,10 +13,11 @@ module DBHelper
       primary_key :id
       String :name
       Integer :attempts, :default => 0
+      TrueClass :active
     end unless DB.table_exists? :game
   end
 
-  def self.get_treasure
+  def self.get_treasures
     DB[:map].where(:name => 'treasure')
   end
 
@@ -25,11 +26,16 @@ module DBHelper
   end
 
   def self.update_treasure(treasure_x, treasure_y)
-    if get_treasure.first
+    # TODO which treasure I want to update?
+    if get_treasures.first
       DB[:map].where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
     else
       set_treasure(treasure_x, treasure_y)
     end
+  end
+
+  def self.delete_treasure(treasure_x, treasure_y)
+    DB[:map].where(:name => 'treasure').delete(:pos_x => treasure_x, :pos_y => treasure_y)
   end
 
   def self.reset_attempts

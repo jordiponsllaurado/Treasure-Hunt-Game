@@ -27,7 +27,7 @@ describe Game do
 
     describe 'send coords' do
       it 'returns success when the coords are the treasure' do
-        expect(Game.send_coord(5, 5)).to eql('SUCESS!!!!!!!!!!!!!!')
+        expect(Game.send_coord(5, 5)).to eql('SUCESS, YOU FINISHED THE GAME!!!!!!!!!!!!!!')
       end
 
       it 'returns hot when the coords are 1 position far of the treasure' do
@@ -73,4 +73,5 @@ describe Game do
     end
   end
 
+  #TODO test delete treasure
 end

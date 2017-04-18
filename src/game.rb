@@ -11,12 +11,13 @@ module Game
 
     treasure_x = rand(MAX_X_BOARD)
     treasure_y = rand(MAX_Y_BOARD)
-    if DBHelper.get_treasure.first
+    if DBHelper.get_treasures.first
       DBHelper.update_treasure(treasure_x, treasure_y)
     else
       DBHelper.set_treasure(treasure_x, treasure_y)
     end
     DBHelper.reset_attempts
+    # TODO reset active game
   end
 
   def self.check_boundaries(x, y)
@@ -35,7 +36,8 @@ module Game
   end
 
   def self.get_treasure
-    result = DBHelper.get_treasure
+    #TODO which treasure I want to get?
+    result = DBHelper.get_treasures
     treasure_x = result.first[:pos_x]
     treasure_y =  result.first[:pos_y]
     {x: treasure_x, y: treasure_y}
@@ -45,7 +47,20 @@ module Game
 
   def self.get_result(zone_x, zone_y)
     if zone_x.eql?(0) && zone_y.eql?(0)
-      'SUCESS!!!!!!!!!!!!!!'
+      number_treasures = DBHelper.get_treasures.count
+      if number_treasures > 1
+        puts 'Do you want to continue? (Y/N)'
+        continue = STDIN.gets.chomp
+        if continue.eql? 'N'
+          # TODO set player status to finish
+          'SUCESS, YOU FINISHED THE GAME WITHOUT ALL THE TREASURES!!!!!!!!!!!!!!'
+        else
+          # TODO delete treasure
+          'SUCESS, LETS FIND MORE TREASURES!!!!!!!!!!!!!!'
+        end
+      else
+        'SUCESS, YOU FINISHED THE GAME!!!!!!!!!!!!!!'
+      end
     elsif zone_x < 2 && zone_y < 2
       'HOT HOT HOT!!!'
     elsif zone_x < 3 && zone_y < 3
