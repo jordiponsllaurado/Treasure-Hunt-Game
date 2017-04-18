@@ -6,6 +6,14 @@ module Game
   MIN_Y_BOARD = 0
   MAX_Y_BOARD = 10
 
+  HOT = 'HOT HOT HOT!!!'
+  WARM = 'WARM!'
+  COLD = 'COLD!!!'
+  GAME_FINISHED = 'SUCCESS, YOU FINISHED THE GAME!!!!!!!!!!!!!!'
+  SUCCESS_AND_FINISH = 'SUCCESS, YOU FINISHED THE GAME WITHOUT ALL THE TREASURES!!!!!!!!!!!!!!'
+  SUCCESS_AND_CONTINUE = 'SUCCESS, LETS FIND MORE TREASURES!!!!!!!!!!!!!!'
+  GAME_OVER = 'GAME OVER!!!'
+
   def self.create_game
     DBHelper.create_db_table
 
@@ -27,7 +35,7 @@ module Game
   def self.send_coord(x, y)
     DBHelper.increment_attempts
     if DBHelper.get_attempts >= 5
-      return 'GAME OVER!!!'
+      return GAME_OVER
     end
     treasure = get_treasure
     zone_x =  (x - treasure[:x]).abs
@@ -49,24 +57,28 @@ module Game
     if zone_x.eql?(0) && zone_y.eql?(0)
       number_treasures = DBHelper.get_treasures.count
       if number_treasures > 1
-        puts 'Do you want to continue? (Y/N)'
-        continue = STDIN.gets.chomp
-        if continue.eql? 'N'
-          # TODO set player status to finish
-          'SUCESS, YOU FINISHED THE GAME WITHOUT ALL THE TREASURES!!!!!!!!!!!!!!'
-        else
-          # TODO delete treasure
-          'SUCESS, LETS FIND MORE TREASURES!!!!!!!!!!!!!!'
-        end
+        continue_game?
       else
-        'SUCESS, YOU FINISHED THE GAME!!!!!!!!!!!!!!'
+        GAME_FINISHED
       end
     elsif zone_x < 2 && zone_y < 2
-      'HOT HOT HOT!!!'
+      HOT
     elsif zone_x < 3 && zone_y < 3
-      'WARM!'
+      WARM
     else
-      'COLD!!!'
+      COLD
+    end
+  end
+
+  def self.continue_game?
+    puts 'Do you want to continue? (Y/N)'
+    continue = STDIN.gets.chomp
+    if continue.eql? 'N'
+      # TODO set player status to finish
+      SUCCESS_AND_FINISH
+    else
+      # TODO delete treasure
+      SUCCESS_AND_CONTINUE
     end
   end
 end

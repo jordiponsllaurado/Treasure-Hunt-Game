@@ -27,19 +27,19 @@ describe Game do
 
     describe 'send coords' do
       it 'returns success when the coords are the treasure' do
-        expect(Game.send_coord(5, 5)).to eql('SUCESS, YOU FINISHED THE GAME!!!!!!!!!!!!!!')
+        expect(Game.send_coord(5, 5)).to eql(Game::GAME_FINISHED)
       end
 
       it 'returns hot when the coords are 1 position far of the treasure' do
-        expect(Game.send_coord(4, 4)).to eql('HOT HOT HOT!!!')
+        expect(Game.send_coord(4, 4)).to eql(Game::HOT)
       end
 
       it 'returns warm when the coords are 2 positions far of the treasure' do
-        expect(Game.send_coord(3, 3)).to eql('WARM!')
+        expect(Game.send_coord(3, 3)).to eql(Game::WARM)
       end
 
       it 'returns warm when the coords are 2 positions far of the treasure' do
-        expect(Game.send_coord(2, 2)).to eql('COLD!!!')
+        expect(Game.send_coord(2, 2)).to eql(Game::COLD)
       end
     end
 
@@ -68,7 +68,7 @@ describe Game do
         Game.send_coord(1, 2)
         Game.send_coord(2, 3)
         Game.send_coord(2, 9)
-        expect(Game.send_coord(1, 2)).to eql('GAME OVER!!!')
+        expect(Game.send_coord(1, 2)).to eql(Game::GAME_OVER)
       end
     end
   end
