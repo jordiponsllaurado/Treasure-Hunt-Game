@@ -1,12 +1,11 @@
+require_relative 'board'
+
 module Game
 
-  MIN_X_BOARD = 0
-  MAX_X_BOARD = 10
-
-  MIN_Y_BOARD = 0
-  MAX_Y_BOARD = 10
-
   MAX_ATTEMPTS = 5
+
+  TREASURE_ONE = 1
+  TREASURE_TWO = 2
 
   HOT = 'HOT HOT HOT!!!'
   WARM = 'WARM!'
@@ -23,23 +22,19 @@ module Game
     # TODO reset active game
   end
 
-  def self.check_boundaries(x, y)
-    x.between?(MIN_X_BOARD, MAX_X_BOARD) && y.between?(MIN_Y_BOARD, MAX_Y_BOARD)
-  end
-
   def self.send_coord(x, y)
     # TODO check if the game is active
     DBHelper.increment_attempts
     if DBHelper.get_attempts >= MAX_ATTEMPTS
       return GAME_OVER
     end
-    if DBHelper.get_treasure(1).first
-      result = get_result(1, x, y)
-      if DBHelper.get_treasure(2) && result.eql?(COLD)
-        result = get_result(2, x, y)
+    if DBHelper.get_treasure(TREASURE_ONE).first
+      result = get_result(TREASURE_ONE, x, y)
+      if DBHelper.get_treasure(TREASURE_TWO) && result.eql?(COLD)
+        result = get_result(TREASURE_TWO, x, y)
       end
     else
-      result = get_result(2, x, y)
+      result = get_result(TREASURE_TWO, x, y)
     end
     result
   end
@@ -86,44 +81,20 @@ module Game
   end
 
   def self.create_treasures
-    treasure_one_x = rand(MAX_X_BOARD)
-    treasure_one_y = rand(MAX_Y_BOARD)
-    matrix = Array.new(10){ Array.new(10) }
-    matrix.each_with_index do |rows, index_x|
-      rows.each_with_index { |_, index_y| matrix[index_x][index_y] = {x: index_x, y: index_y} }
-    end
-    from_x = treasure_one_x - 2
-    from_x = 0 if from_x < 0
-    to_x = treasure_one_x + 2
-    to_x = 9 if to_x > 9
+    treasure_one = Board.random_first_treasure
+    treasure_two = Board.random_second_treasure(treasure_one)
+    create_treasure(TREASURE_ONE, treasure_one)
+    create_treasure(TREASURE_TWO, treasure_two)
+  end
 
-    from_y = treasure_one_y - 2
-    from_y = 0 if from_y < 0
-    to_y = treasure_one_y + 2
-    to_y = 9 if to_x > 9
-    for x  in from_x..to_x
-      for y in from_y..to_y
-        matrix[x][y] = nil
-      end
-    end
-    matrix
-    matrix.each do |row|
-      row.compact!
-    end
-    matrix
-    random_x = rand(matrix.length)
-    random_y = rand(matrix[random_x].length)
-    treasure_two_x = matrix[random_x][random_y][:x]
-    treasure_two_y = matrix[random_x][random_y][:y]
-    if DBHelper.get_treasure(1).first
-      DBHelper.update_treasure(1, treasure_one_x, treasure_one_y)
+  private
+
+  def self.create_treasure(treasure_number, treasure)
+    if DBHelper.get_treasure(treasure_number).first
+      DBHelper.update_treasure(treasure_number, treasure[:x], treasure[:y])
     else
-      DBHelper.set_treasure(1, treasure_one_x, treasure_one_y)
-    end
-    if DBHelper.get_treasure(2).first
-      DBHelper.update_treasure(2, treasure_two_x, treasure_two_y)
-    else
-      DBHelper.set_treasure(2, treasure_two_x, treasure_two_y)
+      DBHelper.set_treasure(treasure_number, treasure[:x], treasure[:y])
     end
   end
+
 end

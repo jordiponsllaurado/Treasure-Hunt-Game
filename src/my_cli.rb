@@ -14,7 +14,7 @@ class MyCLI < Thor
 
   desc 'position X Y', 'say if the treasure is there'
   def position(x, y)
-    if Game.check_boundaries(x.to_i, y.to_i)
+    if Board.check_boundaries(x.to_i, y.to_i)
       puts Game.send_coord(x.to_i, y.to_i)
     else
       puts 'Coordinates out of the map!'
@@ -23,7 +23,9 @@ class MyCLI < Thor
 
   desc 'solution', 'it says the solution'
   def solution
-    treasure = Game.get_treasure
+    treasure = Game.get_treasure(1)
+    puts treasure[:x].to_s + ' ' + treasure[:y].to_s
+    treasure = Game.get_treasure(2)
     puts treasure[:x].to_s + ' ' + treasure[:y].to_s
   end
 end
