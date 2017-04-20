@@ -18,24 +18,27 @@ module DBHelper
   end
 
   def self.get_treasures
-    DB[:map].where(:name => 'treasure')
+    DB[:map].where('name like ?', '%treasure%')
   end
 
-  def self.set_treasure(treasure_x, treasure_y)
-    DB[:map].insert(:name => 'treasure', :pos_x => treasure_x, :pos_y => treasure_y)
+  def self.get_treasure(treasure_number)
+    DB[:map].where(:name => 'treasure' + treasure_number.to_s)
   end
 
-  def self.update_treasure(treasure_x, treasure_y)
-    # TODO which treasure I want to update?
-    if get_treasures.first
-      DB[:map].where(:name => 'treasure').update(:pos_x => treasure_x, :pos_y => treasure_y)
+  def self.set_treasure(treasure_number, treasure_x, treasure_y)
+    DB[:map].insert(:name => 'treasure' + treasure_number.to_s, :pos_x => treasure_x, :pos_y => treasure_y)
+  end
+
+  def self.update_treasure(treasure_number, treasure_x, treasure_y)
+    if get_treasure(treasure_number).first
+      DB[:map].where(:name => 'treasure' + treasure_number.to_s).update(:pos_x => treasure_x, :pos_y => treasure_y)
     else
-      set_treasure(treasure_x, treasure_y)
+      set_treasure(treasure_number, treasure_x, treasure_y)
     end
   end
 
-  def self.delete_treasure(treasure_x, treasure_y)
-    DB[:map].where(:name => 'treasure').delete(:pos_x => treasure_x, :pos_y => treasure_y)
+  def self.delete_treasure(treasure_number, treasure_x, treasure_y)
+    DB[:map].where(:name => 'treasure' + treasure_number.to_s, :pos_x => treasure_x, :pos_y => treasure_y).delete
   end
 
   def self.reset_attempts
